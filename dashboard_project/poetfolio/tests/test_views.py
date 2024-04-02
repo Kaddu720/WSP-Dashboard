@@ -46,7 +46,7 @@ class IndexTest(TestCase):
         test_wspstaff.groups.add(wspstaff_group)
 
     def test_anonymous_user_can_view(self):
-        response = self.client.get(reverse(Index))
+        response = self.client.get(reverse(Index), follow=True)
 
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'base.html')
@@ -55,7 +55,7 @@ class IndexTest(TestCase):
         test_student = User.objects.get(username='test_student')
         logged_in = self.client.force_login(test_student)
 
-        response = self.client.get(reverse(Index))
+        response = self.client.get(reverse(Index), follow=True)
 
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'base.html')
@@ -64,7 +64,7 @@ class IndexTest(TestCase):
         test_council = User.objects.get(username='test_council')
         logged_in = self.client.force_login(test_council)
 
-        response = self.client.get(reverse(Index))
+        response = self.client.get(reverse(Index), follow=True)
 
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'base.html')
@@ -73,7 +73,7 @@ class IndexTest(TestCase):
         test_wspstaff = User.objects.get(username='test_wspstaff')
         logged_in = self.client.force_login(test_wspstaff)
 
-        response = self.client.get(reverse(Index))
+        response = self.client.get(reverse(Index), follow=True)
 
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'base.html')
