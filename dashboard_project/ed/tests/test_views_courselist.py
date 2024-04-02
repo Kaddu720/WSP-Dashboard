@@ -77,7 +77,7 @@ class CourseListTest(TestCase):
     def test_login_required(self):
         response = self.client.get(reverse(CourseList), follow=True)
         redirect_path = reverse('login') + '?next=' + reverse(CourseList)
-        self.assertEqual(response.redirect_chain[1][0], redirect_path)
+        self.assertEqual(response.redirect_chain[0][0], redirect_path)
 
     def test_student_post_request(self):
         test_student = User.objects.get(username='test_student')
@@ -85,14 +85,13 @@ class CourseListTest(TestCase):
         response = self.client.post(reverse(CourseList))
         redirect_path = reverse('Index')
         # assertRedirects doesn't work right after POST?
-        self.assertEqual(response.redirect_chain[1][1], 302)
-        self.assertEqual(response.request[1][0], redirect_path)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, redirect_path)
 
     def test_student_get_request(self):
         test_student = User.objects.get(username='test_student')
         logged_in = self.client.force_login(test_student)
         response = self.client.get(reverse(CourseList))
-        print(response.context)
 
         self.assertIn('user', response.context)
         self.assertEqual(response.context['user'], test_student)
@@ -147,8 +146,8 @@ class CourseListTest(TestCase):
             {'student': max_id+1},
             follow=True
         )
-        self.assertEqual(response.redirect_chain[1][1], 302)
-        self.assertEqual(response.redirect_chain[1][0], reverse(CourseList))
+        self.assertEqual(response.redirect_chain[0][1], 302)
+        self.assertEqual(response.redirect_chain[0][0], reverse(CourseList))
 
     def test_council_get_request_picker(self):
         test_council = User.objects.get(username='test_council')
@@ -186,11 +185,10 @@ class CourseListTest(TestCase):
         logged_in = self.client.force_login(test_wspstaff)
         response = self.client.post(
             reverse(CourseList),
-            {'student': test_student.id},
-            follow=True
+            {'student': test_student.id}
         )
 
-        self.assertEqual(response.redirect_chain[1][1], 302)
+        self.assertEqual(response.status_code, 302)
         self.assertEqual(
             response.url,
             reverse(CourseList) + test_student.username,
@@ -208,17 +206,17 @@ class CourseListTest(TestCase):
             {'student': max_id+1},
             follow=True
         )
-        self.assertEqual(response.redirect_chain[1][1], 302)
-        self.assertEqual(response.url, reverse(CourseList))
+        self.assertEqual(response.redirect_chain[0][1], 302)
+        self.assertEqual(response.redirect_chain[0][0], reverse(CourseList))
 
     def test_wspstaff_get_request_picker(self):
         test_wspstaff = User.objects.get(username='test_wspstaff')
         logged_in = self.client.force_login(test_wspstaff)
-        response = self.client.get(reverse(CourseList), follow=True)
+        response = self.client.get(reverse(CourseList))
 
         self.assertIn('user', response.context)
         self.assertEqual(response.context['user'], test_wspstaff)
-        self.assertEqual(response.redirect_chain[0][0], 200)
+        self.assertEqual(response.status_code, 200)
         self.assertTrue(response.context['user'].is_authenticated)
         self.assertTemplateUsed(response, 'ed/studentpickerform.html')
 
@@ -317,7 +315,7 @@ class EditEDCourseTest(TestCase):
     def test_anonymous_user_redirected_to_login(self):
         response = self.client.get(reverse(EditEDCourse), follow=True)
         redirect_path = reverse('login') + '?next=' + reverse(EditEDCourse)
-        self.assertEqual(response.redirect_chain[1][0], redirect_path)
+        self.assertEqual(response.redirect_chain[0][0], redirect_path)
 
         response = self.client.post(
             reverse('editEDCourse'),
@@ -325,7 +323,7 @@ class EditEDCourseTest(TestCase):
             follow=True
         )
 
-        self.assertEqual(response.redirect_chain[1][0], redirect_path)
+        self.assertEqual(response.redirect_chain[0][0], redirect_path)
 
     def test_council_redirected_to_index(self):
         test_council = User.objects.get(username='test_council')
@@ -333,8 +331,8 @@ class EditEDCourseTest(TestCase):
 
         redirect_path = reverse('Index')
         response = self.client.get(reverse('editEDCourse'), follow=True)
-        self.assertEqual(response.redirect_chain[1][1], 302)
-        self.assertEqual(response.redirect_chain[1][0], redirect_path)
+        self.assertEqual(response.redirect_chain[0][1], 302)
+        self.assertEqual(response.redirect_chain[0][0], redirect_path)
 
         response = self.client.post(
             reverse(EditEDCourse),
@@ -342,8 +340,8 @@ class EditEDCourseTest(TestCase):
             follow=True
         )
         # assertRedirects doesn't work right after POST?
-        self.assertEqual(response.redirect_chain[1][1], 302)
-        self.assertEqual(response.request['PATH_INFO'], redirect_path)
+        self.assertEqual(response.redirect_chain[0][1], 302)
+        self.assertEqual(response.redirect_chain[0][0], redirect_path)
 
     def test_wspstaff_redirected_to_index(self):
         test_wspstaff = User.objects.get(username='test_wspstaff')
@@ -351,17 +349,16 @@ class EditEDCourseTest(TestCase):
 
         redirect_path = reverse('Index')
         response = self.client.get(reverse('editEDCourse'), follow=True)
-        self.assertEqual(response.redirect_chain[1][1], 302)
-        self.assertEqual(response.request['PATH_INFO'], redirect_path)
+        self.assertEqual(response.redirect_chain[0][1], 302)
+        self.assertEqual(response.redirect_chain[0][0], redirect_path)
 
         response = self.client.post(
             reverse(EditEDCourse),
             {'edcourse_id': 0},
-            follow=True
         )
-        # assertRedirects doesn't work right after POST?
-        self.assertEqual(response.redirect_chain[1][1], 302)
-        self.assertEqual(response.request['PATH_INFO'], redirect_path)
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, redirect_path)
 
     def test_student_can_edit_own_edcourse(self):
         test_student = User.objects.get(username='test_student')
@@ -399,10 +396,9 @@ class EditEDCourseTest(TestCase):
         
         response = self.client.post(
             reverse('editEDCourse') + str(edcourse.id),
-            payload,
-            follow=True
+            payload
         )
-        
+
         self.assertRedirects(response, reverse('CourseList'))
 
         new_edcourse = EDCourse.objects.filter(student=test_student).first()
@@ -456,8 +452,8 @@ class EditEDCourseTest(TestCase):
         )
         # assertRedirects doesn't work right after POST?
         redirect_path = reverse('Index')
-        self.assertEqual(response.redirect_chain[1][1], 302)
-        self.assertEqual(response.request['PATH_INFO'], redirect_path)
+        self.assertEqual(response.redirect_chain[0][1], 302)
+        self.assertEqual(response.redirect_chain[0][0], redirect_path)
 
         new_edcourse = EDCourse.objects.filter(student=test_student).first()
         self.assertEqual(new_edcourse.course, whyread)
@@ -812,11 +808,11 @@ class TestDeleteEDCourse(TestCase):
         )
 
         payload = {'course_id': edcourse.id}
-        response = self.client.post(reverse('deleteEDCourse'), payload, follow=True)
-
+        response = self.client.post(reverse('deleteEDCourse'), payload)
+        
         redirect_path = reverse('CourseList')
-        self.assertEqual(response.redirect_chain[1][1], 302)
-        self.assertEqual(response.request[1][0], redirect_path)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, redirect_path)
 
         with self.assertRaises(EDCourse.DoesNotExist):
             edcourse = EDCourse.objects.get(
@@ -843,11 +839,11 @@ class TestDeleteEDCourse(TestCase):
         )
 
         payload = {'course_id': edcourse.id}
-        response = self.client.post(reverse('deleteEDCourse'), payload, follow=True)
+        response = self.client.post(reverse('deleteEDCourse'), payload)
 
         redirect_path = reverse('Index')
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.request['PATH_INFO'], redirect_path)
+        self.assertEqual(response.url, redirect_path)
 
         self.assertEqual(edcourse, EDCourse.objects.get(id=edcourse.id))
 
@@ -870,11 +866,11 @@ class TestDeleteEDCourse(TestCase):
         )
 
         payload = {'course_id': edcourse.id}
-        response = self.client.post(reverse('deleteEDCourse'), payload, follow=True)
+        response = self.client.post(reverse('deleteEDCourse'), payload)
 
         redirect_path = reverse('Index')
-        self.assertEqual(response.redirect_chain[1][1], 302)
-        self.assertEqual(response.request[1][0], redirect_path)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, redirect_path)
 
         self.assertEqual(edcourse, EDCourse.objects.get(id=edcourse.id))
 
@@ -897,10 +893,10 @@ class TestDeleteEDCourse(TestCase):
         )
 
         payload = {'course_id': edcourse.id}
-        response = self.client.post(reverse('deleteEDCourse'), payload, follow=True)
+        response = self.client.post(reverse('deleteEDCourse'), payload)
 
         redirect_path = reverse('Index')
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.request['PATH_INFO'], redirect_path)
+        self.assertEqual(response.url, redirect_path)
 
         self.assertEqual(edcourse, EDCourse.objects.get(id=edcourse.id))
