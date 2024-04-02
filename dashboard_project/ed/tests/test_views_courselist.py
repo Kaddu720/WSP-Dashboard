@@ -525,13 +525,13 @@ class AddCourseTest(TestCase):
 
         response = self.client.get(reverse('AddCourse'), follow=True)
 
-        self.assertEqual(response.redirect_chain[1][1], 302)
-        self.assertEqual(response.redirect_chain[1][0], redirect_path)
+        self.assertEqual(response.redirect_chain[0][1], 302)
+        self.assertEqual(response.redirect_chain[0][0], redirect_path)
 
         response = self.client.post(reverse('AddCourse'), {}, follow=True)
 
-        self.assertEqual(response.redirect_chain[1][1], 302)
-        self.assertEqual(response.redirect_chain[1][0], redirect_path)
+        self.assertEqual(response.redirect_chain[0][1], 302)
+        self.assertEqual(response.redirect_chain[0][0], redirect_path)
 
     def test_cwspstaff_redirects(self):
         redirect_path = reverse('Index')
@@ -543,13 +543,13 @@ class AddCourseTest(TestCase):
 
         response = self.client.get(reverse('AddCourse'), follow=True)
 
-        self.assertEqual(response.redirect_chain[1][1], 302)
-        self.assertEqual(response.redirect_chain[1][0], redirect_path)
+        self.assertEqual(response.redirect_chain[0][1], 302)
+        self.assertEqual(response.redirect_chain[0][0], redirect_path)
         
         response = self.client.post(reverse('AddCourse'), {}, follow=True)
 
-        self.assertEqual(response.redirect_chain[1][1], 302)
-        self.assertEqual(response.redirect_chain[1][0], redirect_path)
+        self.assertEqual(response.redirect_chain[0][1], 302)
+        self.assertEqual(response.redirect_chain[0][0], redirect_path)
 
     def test_student_get_request(self):
         test_student = User.objects.get(username="test_student")
@@ -622,8 +622,8 @@ class AddCourseTest(TestCase):
         response = self.client.post(reverse('AddCourse'), payload, follow=True)
 
         redirect_path = reverse('AddCourse')
-        self.assertEqual(response.redirect_chain[1][1], 302)
-        self.assertEqual(response.redirect_chain[1][0], redirect_path)
+        self.assertEqual(response.redirect_chain[0][1], 302)
+        self.assertEqual(response.redirect_chain[0][0], redirect_path)
 
         edcourse = EDCourse.objects.filter(student=test_student)[0]
         term = Term.objects.get(code=202009)
@@ -685,8 +685,8 @@ class AddCourseTest(TestCase):
         response = self.client.post(reverse('AddCourse'), payload, follow=True)
 
         redirect_path = reverse('AddCourse')
-        self.assertEqual(response.redirect_chain[1][1], 302)
-        self.assertEqual(response.redirect_chain[1][0], redirect_path)
+        self.assertEqual(response.redirect_chain[0][1], 302)
+        self.assertEqual(response.redirect_chain[0][0], redirect_path)
         
 
         edcourse = EDCourse.objects.filter(student=test_student)[0]
