@@ -92,9 +92,8 @@ def CourseList(request, username=None):
                 student = User.objects.get(id=request.POST.get('student'))
             except User.DoesNotExist:
                 return redirect(reverse('CourseList'))
-
+            
             return redirect(reverse('CourseList')+student.username)
-
         else:
             return redirect(reverse('Index'))
 
@@ -106,10 +105,13 @@ def CourseList(request, username=None):
             major2 = major_courses(user, 2)
             minor1 = minor_courses(user, 1)
             minor2 = minor_courses(user, 2)
-            shared_url = Student.objects.get(user=user).shared_url
+            try:  
+                shared_url = Student.objects.get(user=user).shared_url
+            except:
+                shared_url = None
+
             if shared_url:
                 shared_url = request.build_absolute_uri(reverse('SharedList')) + shared_url
-
             return render(
                 request,
                 'ed/courselist.html',
