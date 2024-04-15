@@ -13,5 +13,5 @@ python-stdnum==1.19 #changed
 pytz==2023.3
 reportlab==4.0.4
 django-extensions==3.2.3
-Werkzeug==2.2.3
+Werkzeug==3.0.2
 pyOpenSSL==24.1.0
