@@ -8,10 +8,10 @@ django-localflavor==4.0 # edited
 django-phonenumber-field==7.2.0 #edited
 mysqlclient==2.2.1 #edited
 phonenumberslite==8.13.20 # edited
-Pillow==10.1.0 # changed
+Pillow==10.3.0 # changed
 python-stdnum==1.19 #changed
 pytz==2023.3
 reportlab==4.0.4
 django-extensions==3.2.3
-Werkzeug==2.2.3
+Werkzeug==2.3.8
 pyOpenSSL==24.1.0
