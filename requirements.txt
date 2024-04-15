@@ -1,4 +1,4 @@
-Babel==2.12.1
+Babel==2.14.0
 Django==4.2.11
 django-bootstrap4==23.1
 django-ckeditor==6.7
